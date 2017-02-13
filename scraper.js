@@ -8,8 +8,11 @@ var getNumPages = function(artist){
   console.log("getting numpage from: "+link);
   return ng.goto(link)
     .evaluate(function(){
-      var numPages = document.querySelector('.one-column').querySelectorAll('.pager-letter').length
-      if(numPages<0){numPages=1}
+      try{
+        var numPages = document.querySelector('.one-column').querySelectorAll('.pager-letter').length-1
+      } catch (err) {
+        var numPages = 1
+      }
       return numPages
     })
     .end()
@@ -52,12 +55,6 @@ var getSongs = function(artist){
     .then(merge)
 }
 
-
-//testing function
-// var checkLyrics=function(lyrics){
-//   console.log(lyrics)
-//   return lyrics;
-// }
 
 var getLyrics = function(link){
   console.log("getting lyrics from: "+link);
