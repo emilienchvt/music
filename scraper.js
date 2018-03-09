@@ -13,6 +13,9 @@ var getNumPages = function(artist){
       } catch (err) {
         var numPages = 1
       }
+      if(numPages==-1){
+        return 1;
+      }
       return numPages
     })
     .end()
@@ -55,16 +58,18 @@ var getSongs = function(artist){
     .then(merge)
 }
 
-
 var getLyrics = function(link){
   console.log("getting lyrics from: "+link);
   var ng = nightmare({show: false});
   return ng.goto(link)
     .evaluate(function(){
-      return document.querySelector(".song-text").innerText
+      return {
+        lyrics: document.querySelector(".song-text").innerText,
+        fileName: document.querySelector("#main > div.box.left > div > div > div > div.border-grey.margin-t20 > div > div > div.song-text-frame > div.song-text > h2").innerText,
+      }
     })
     .end()
-    .then(x=>fs.appendFile(file, x+"\n\n"))
+    .then(x=>fs.appendFile("scrapedLyrics/"+x.fileName+".txt", x.lyrics))
     // .then(checkLyrics)
     .catch(console.log)
 }
@@ -86,7 +91,7 @@ var printStatus=function(songs){
 
 
 var artist = process.argv[2];
-var file = "scrapedLyrics/"+artist.toLowerCase()+".txt"
+// var file = "scrapedLyrics/"+artist.toLowerCase()+".txt"
 
 getSongs(artist)
   .then(printStatus)
